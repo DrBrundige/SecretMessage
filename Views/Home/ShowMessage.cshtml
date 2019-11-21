@@ -1,0 +1,37 @@
+﻿@model SecretView
+
+<h3>Showing Message: @Model.NewMessage.MessageTitle</h3>
+
+<p>Encrypted message:</p>
+<p>@Model.NewMessage.MessageBody</p>
+
+@{if(@Model.Decrypt != null){
+	<p>Decrypted message for cypher: @Model.Cypher</p>
+	<p>@Model.Decrypt</p>
+}
+}
+
+<h3>Decrypt this message</h3>
+<form asp-action="DecryptMessage" asp-controller="Home" method="post">
+	<div class="form-group">
+		<label>Cypher</label>
+		<span asp-validation-for="Cypher"></span>
+		<input type="password" class="form-control" asp-for="Cypher">
+	</div>
+	<div class="form-group">
+		<input type="submit" class="btn btn-primary" value="Submit">
+	</div>
+	<input type="hidden" value="@Model.NewMessage.MessageId" asp-for="MessageId">
+</form>
+
+<hr class="hr-3">
+<h3>Recent Accesses</h3>
+@{if(@Model.RecentAccesses.Count == 0){
+	<p>No recent accesses!</p>
+} else {
+	foreach(Access access in Model.RecentAccesses){
+		<p>@access.User.Username accessed at: @access.CreatedAt</p>
+	}
+}}
+<p><a href="/messages">All messages</a></p>
+<p><a href="/logout">Logout</a></p>

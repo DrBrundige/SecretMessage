@@ -14,7 +14,6 @@ namespace SecretMessage.Models
 		[MinLength(4, ErrorMessage = "Username must be no less than four characters!")]
 
 		public string Username { get; set; }
-		public string Email { get; set; }
 
 		[Required]
 		[MinLength(8)]
@@ -25,6 +24,9 @@ namespace SecretMessage.Models
 		[Compare("Password")]
 		[DataType(DataType.Password, ErrorMessage = "Passwords must match!")]
 		public string Confirm { get; set; }
+
+		[NotMapped]
+		public List<Access> Accesses { get; set; }
 
 		public DateTime CreatedAt { get; set; }
 		public DateTime UpdatedAt { get; set; }

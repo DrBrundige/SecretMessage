@@ -9,6 +9,7 @@ namespace SecretMessage.Models
 
         public DbSet<User> Users {get; set;}
 				public DbSet<Message> Messages {get; set;}
+				public DbSet<Access> Accesses {get; set;}
 
     }
 }

@@ -11,12 +11,20 @@ namespace SecretMessage.Models
 		public int MessageId { get; set; }
 
 		[Required]
+		[MinLength(4, ErrorMessage = "Message title must be no less than four characters!")]
+
+		public string MessageTitle { get; set; }
+
+		[Required]
 		[MinLength(4, ErrorMessage = "Message body must be no less than four characters!")]
 
 		public string MessageBody { get; set; }
 
 		[NotMapped]
 		public string Cypher { get; set; }
+		
+		[NotMapped]
+		public List<Access> Accesses { get; set; }
 
 		public DateTime CreatedAt { get; set; }
 		public DateTime UpdatedAt { get; set; }

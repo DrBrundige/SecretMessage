@@ -1,0 +1,38 @@
+﻿@model SecretView
+
+<h1>Welcome to Secret Messages!</h1>
+
+<h3>New Message</h3>
+<form asp-action="NewMessage" asp-controller="Home" method="post">
+	<div class="form-group">
+		<label>Title</label>
+		<span asp-validation-for="NewMessage.MessageTitle"></span>
+		<input type="text" class="form-control" asp-for="NewMessage.MessageTitle">
+	</div>
+	<div class="form-group">
+		<label>Message Body</label>
+		<span asp-validation-for="NewMessage.MessageBody"></span>
+		<textarea asp-for="NewMessage.MessageBody" class="form-control" aria-label="With textarea">Your message here</textarea>
+	</div>
+	<div class="form-group">
+		<label>Cypher</label>
+		<span asp-validation-for="NewMessage.Cypher"></span>
+		<input type="password" class="form-control" asp-for="NewMessage.Cypher">
+	</div>
+	<div class="form-group">
+		<input type="submit" class="btn btn-primary" value="Submit">
+	</div>
+</form>
+
+<hr class="hr-3">
+<h3>Recent Messages</h3>
+@{if(@Model.RecentMessages.Count == 0){
+	<p>No recent messages!</p>
+} else {
+	foreach(Message message in Model.RecentMessages){
+		<a href="/message/@message.MessageId">@message.MessageTitle</a>
+		<br>
+	}
+}}
+<br>
+<a href="/logout">Logout</a>
