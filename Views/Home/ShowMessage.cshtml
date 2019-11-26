@@ -10,6 +10,10 @@
 	<p>@Model.Decrypt</p>
 }
 }
+@{if(@Model.Blocked == 0){
+	<p>Too many accesses! Attempt blocked!</p>
+}
+}
 
 <h3>Decrypt this message</h3>
 <form asp-action="DecryptMessage" asp-controller="Home" method="post">

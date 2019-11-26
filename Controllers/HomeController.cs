@@ -155,6 +155,19 @@ namespace SecretMessage.Controllers
 				secretView.NewMessage = _context.Messages.FirstOrDefault(x => x.MessageId == id);
 
 				string decrypt = HttpContext.Session.GetString("message");
+				int? blocked = HttpContext.Session.GetInt32("blocked");
+
+				if (blocked != null)
+				{
+					secretView.Blocked = (int)blocked;
+					HttpContext.Session.SetInt32("blocked", -1);
+				}
+				else
+				{
+					secretView.Blocked = 1;
+					HttpContext.Session.SetInt32("blocked", -1);
+				}
+
 				if (!String.IsNullOrEmpty(decrypt))
 				{
 					secretView.Decrypt = decrypt;
@@ -164,12 +177,15 @@ namespace SecretMessage.Controllers
 					// Resets session, so message won't be accidentally repeated on other pages
 					HttpContext.Session.Remove("message");
 					HttpContext.Session.Remove("cypher");
-				} else {
+				}
+				else
+				{
 					secretView.Decrypt = null;
 				}
 
 				secretView.RecentAccesses = _context.Accesses.Where(x => x.MessageId == id).Include(x => x.User).OrderByDescending(x => x.CreatedAt).ToList();
 
+				// System.Console.WriteLine(secretView.Blocked);
 				return View("ShowMessage", secretView);
 			}
 			catch (Exception e)
@@ -186,29 +202,47 @@ namespace SecretMessage.Controllers
 		public IActionResult DecryptMessage(SecretView nice)
 		{
 			int? userId = HttpContext.Session.GetInt32("user");
-			if(userId == null){
+			if (userId == null)
+			{
 				return RedirectToAction("Index");
 			}
 
 			try
 			{
 				int id = Int32.Parse(nice.MessageId);
-				System.Console.WriteLine("Decrypting message with id:" + id);
-				Message message = _context.Messages.FirstOrDefault(x => x.MessageId == id);
+				// If the message has been accessed too many times, blocks attempt
+				DateTime then = DateTime.Now;
+				then = then.AddHours(-1);
 
-				HttpContext.Session.SetString("cypher", nice.Cypher);
-				string decrypt = EncryptionMethods.decrypt(message.MessageBody, nice.Cypher, EncryptionMethods.alphabet());
-				// System.Console.WriteLine(decrypt);
-				HttpContext.Session.SetString("message", decrypt);
+				List<Access> accesses = _context.Accesses.Where(x => x.MessageId == id).Where(x => x.CreatedAt > then).ToList();
 
-				// Add this attempt to access log
-				Access thisAccess = new Access();
-				thisAccess.MessageId = id;
-				thisAccess.UserId = (int)userId;
-				thisAccess.CreatedAt = DateTime.Now;
-				_context.Accesses.Add(thisAccess);
-				_context.SaveChanges();
+				if (accesses.Count() >= 5)
+				{
+					System.Console.WriteLine("Too many accesses! Blocking!");
+					HttpContext.Session.SetInt32("blocked", 0);
+				}
+				else
+				{
+					HttpContext.Session.SetInt32("blocked", 1);
+					// Decrypting message
+					System.Console.WriteLine("Decrypting message with id:" + id);
+					Message message = _context.Messages.FirstOrDefault(x => x.MessageId == id);
 
+					HttpContext.Session.SetString("cypher", nice.Cypher);
+					string decrypt = EncryptionMethods.decrypt(message.MessageBody, nice.Cypher, EncryptionMethods.alphabet());
+					// System.Console.WriteLine(decrypt);
+					HttpContext.Session.SetString("message", decrypt);
+
+					// Add this attempt to access log
+					Access thisAccess = new Access();
+					thisAccess.MessageId = id;
+					thisAccess.UserId = (int)userId;
+					thisAccess.CreatedAt = DateTime.Now;
+					_context.Accesses.Add(thisAccess);
+					_context.SaveChanges();
+				}
+
+				// Returns
 				return RedirectToAction("ShowMessage", new { messageId = id });
 			}
 			catch (Exception e)

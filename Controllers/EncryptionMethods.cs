@@ -22,7 +22,7 @@ namespace SecretMessage.Controllers
 
 		public static string crocodile()
 		{
-			return "The Kinkaid County Fair was one of a dozen state fairs to serve fried smores, with another fifty or so serving them on a stick. Each claimed to be a regional specialty. In the spring, thousands of the things would be pumped out of a factory near the Mar Dorada border, so technically they could claim to be \"A proud product of the Chalcedon Republic,\" though the ingredients and labor were sourced from parts unspoken. These were frozen and shipped discretely to locally assembled stands, where they were thawed and dumped into vats of bubbling grease. Once the fall rolled around, the factory would shift to mass-producing cranberry sauce, though the artificiality of this offering was well-advertised. This made it more appealing to the Chalcedonians for reasons unfathomable, both to outsiders and themselves.";
+			return "Crooked as a crocodile, suck my thumb. Anybody wanna come get some?";
 		}
 
 		public static string scrubWord(string word, List<char> alphabet)
