@@ -78,6 +78,7 @@ namespace SecretMessage.Controllers
 		{
 			System.Console.WriteLine("Logging in user");
 			User userSubmission = nice.User;
+			
 			if (userSubmission.Username != null)
 			{
 				System.Console.WriteLine("Model valid");

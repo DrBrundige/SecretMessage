@@ -2,7 +2,13 @@
 wwwroot
 bin/
 obj/
-migrations
+Migrations/
+/bin/*
+/obj/*
+/Migrations/*
+/bin
+/obj
+/Migrations
 .json
 
 # Logs
