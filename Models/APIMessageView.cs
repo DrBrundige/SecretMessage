@@ -10,6 +10,7 @@ namespace SecretMessage.Models
 		public bool Success { get; set; }
 		public string Message { get; set; }
 		public Message SecretMessage { get; set; }
+		public TimeBomb TimeBomb { get; set; }
 		public List<Access> RecentAccesses { get; set; }
 	}
 }

@@ -10,6 +10,7 @@ Migrations/
 /obj
 /Migrations
 .json
+bin/Debug/*
 
 # Logs
 logs
@@ -90,3 +91,4 @@ typings/
 
 /server/controllers/connection.js
 .jshintrc
+*.dll

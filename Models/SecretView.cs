@@ -9,6 +9,7 @@ namespace SecretMessage.Models
 	{
 		public User NewUser { get; set; }
 		public User User { get; set; }
+		public TimeBomb NewTimeBomb { get; set; }
 
 		// public List<char> Letters { get; set; }
 		// public string word { get; set; }
