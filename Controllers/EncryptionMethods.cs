@@ -102,8 +102,5 @@ namespace SecretMessage.Controllers
 
 			return message;
 		}
-
-
-
 	}
 }

@@ -31,7 +31,7 @@ namespace SecretMessage.Models
 
 		public Message()
 		{
-
+			
 		}
 	}
 }

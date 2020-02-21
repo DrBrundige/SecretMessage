@@ -14,8 +14,26 @@ namespace SecretMessage.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("SecretMessage.Models.Access", b =>
+                {
+                    b.Property<int>("AccessId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("MessageId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("AccessId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Accesses");
+                });
 
             modelBuilder.Entity("SecretMessage.Models.Message", b =>
                 {
@@ -27,11 +45,42 @@ namespace SecretMessage.Migrations
                     b.Property<string>("MessageBody")
                         .IsRequired();
 
+                    b.Property<string>("MessageTitle")
+                        .IsRequired();
+
                     b.Property<DateTime>("UpdatedAt");
 
                     b.HasKey("MessageId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("SecretMessage.Models.TimeBomb", b =>
+                {
+                    b.Property<int>("TimeBombId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<DateTime>("DetonationTime");
+
+                    b.Property<string>("KillMessage");
+
+                    b.Property<string>("MessageCypher");
+
+                    b.Property<int>("MessageId");
+
+                    b.Property<int>("Status");
+
+                    b.Property<DateTime>("UpdatedAt");
+
+                    b.HasKey("TimeBombId");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("TimeBombs");
                 });
 
             modelBuilder.Entity("SecretMessage.Models.User", b =>
@@ -40,8 +89,6 @@ namespace SecretMessage.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Email");
 
                     b.Property<string>("Password")
                         .IsRequired();
@@ -54,6 +101,22 @@ namespace SecretMessage.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SecretMessage.Models.Access", b =>
+                {
+                    b.HasOne("SecretMessage.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("SecretMessage.Models.TimeBomb", b =>
+                {
+                    b.HasOne("SecretMessage.Models.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
