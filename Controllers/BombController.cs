@@ -124,6 +124,37 @@ namespace SecretMessage.Controllers
 			return Json(ParseAPIResponse(results));
 		}
 
+
+		[Route("api/timebomb/detonate")]
+		[HttpPost]
+		public IActionResult detonate([FromBody] SecretView timebomb)
+		{
+			APIMessageView results = new APIMessageView();
+
+			// Retrieves all bombs where DetonationTime is surpassed
+			TimeBomb[] hotBombs = _context.TimeBombs.Where(x => x.DetonationTime < DateTime.Now && x.Status == 0).Include(x => x.Message).ToArray();
+
+			if (hotBombs.Length > 0)
+			{
+				results.Message = $"Found {hotBombs.Length} hot bombs!";
+				results.Success = true;
+				// Iterates through bombs, detonating each
+				foreach (TimeBomb bomb in hotBombs)
+				{
+					string message = detonate(bomb);
+					results.Message += " | " + message;
+				}
+			}
+			else
+			{
+				results.Message = $"No hot bombs found";
+				results.Success = false;
+			}
+
+			return Json(ParseAPIResponse(results));
+		}
+
+
 		public APIMessageView UpdateTimebombStatus(TimeBomb timebomb, int status)
 		{
 			APIMessageView results = new APIMessageView();
@@ -237,12 +268,35 @@ namespace SecretMessage.Controllers
 			return statusString;
 		}
 
+		public string detonate(TimeBomb bomb)
+		{
+			try
+			{
+				// Decrypts timebomb message
+				string decrypt = EncryptionMethods.decrypt(bomb.Message.MessageBody, bomb.MessageCypher, EncryptionMethods.alphabet());
+				System.Console.WriteLine(decrypt);
+
+				// Detonates bomb by emailing message to bomb.address
+
+				bomb.Status = 1;
+				_context.SaveChanges();
+
+				return $"Success! Bomb with id {bomb.TimeBombId} detonated!";
+			}
+			catch (System.Exception e)
+			{
+				bomb.Status = -2;
+				_context.SaveChanges();
+
+				return $"Errant operation detonating bomb with id {bomb.TimeBombId}! Error: " + e.Message;
+			}
+		}
+
 		[Route("api/info/timebomb")]
 		[HttpGet]
-		public IActionResult NewTimeBombInfo()
+		public IActionResult TimeBombInfo()
 		{
 			APIResponseView message = new APIResponseView();
-
 			message.Success = true;
 			message.Message = "\"NewTimeBomb\":{	\"MessageId\": 4,	\"MessageCypher\": \"password\",	\"KillMessage\": \"password\",	\"Address\": \"brundigejones@gmail.com\",	\"DetonationTime\": \"2020-02-28\"}";
 
@@ -251,12 +305,12 @@ namespace SecretMessage.Controllers
 
 		[Route("api/info/status")]
 		[HttpGet]
-		public IActionResult NewStatusInfo()
+		public IActionResult StatusInfo()
 		{
 			APIResponseView message = new APIResponseView();
 
 			message.Success = true;
-			message.Message = "0: Armed 1: Detonated 2: Primed -1: Defused -2: Dud";
+			message.Message = "0: Armed   1: Detonated    2: Primed    -1: Defused    -2: Dud";
 
 			return Json(message);
 		}
